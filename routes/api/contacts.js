@@ -1,9 +1,11 @@
 const express = require("express");
 const contacts = require("../../controllers/contacts");
-const { validateBody, validateFavorite } = require("../../middlewares");
+const {
+  validateBody,
+  validateFavorite,
+  isValidId,
+} = require("../../middlewares");
 const { Schemas } = require("../../models/contact");
-// const { validateBody } = require("../../middlewares");
-// const { bodySchema } = require("../../schemas");
 
 const router = express.Router();
 
@@ -13,7 +15,7 @@ router.get("/:contactId", contacts.getContactById);
 
 router.post("/", validateBody(Schemas.bodySchema), contacts.addContact);
 
-router.delete("/:contactId", contacts.removeContact);
+router.delete("/:contactId", isValidId, contacts.removeContact);
 
 router.put(
   "/:contactId",
