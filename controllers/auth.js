@@ -1,18 +1,26 @@
-const { ctrlWrapper, HttpError } = require("../helpers/index");
+const { ctrlWrapper, HttpError } = require("../helpers");
+const { User } = require("../models/user");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const { User } = require("../models/user");
+const gravatar = require("gravatar");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 
 const { SECRET_KEY } = process.env;
 
 const register = async (req, res, next) => {
   const { email, password } = req.body;
+  const avatarURL = gravatar.url(email);
   const user = await User.findOne({ email });
   if (user) {
     throw HttpError(409, "Email in use");
   }
   const hashPassword = await bcrypt.hash(password, 10);
-  const newUser = await User.create({ email, password: hashPassword });
+  const newUser = await User.create({
+    email,
+    password: hashPassword,
+    avatarURL,
+  });
   res.status(201).json({
     user: { email: newUser.email, subscription: newUser.subscription },
   });
@@ -66,11 +74,25 @@ const updateSubscriptionStatus = async (req, res, next) => {
     { new: true }
   );
   if (!updatedUser) {
-    throw HttpError(404, "Not found");
+    throw HttpError(404);
   }
   res
     .status(200)
     .json({ email: updatedUser.email, subscription: updatedUser.subscription });
+};
+
+const updateUserAvatar = async (req, res) => {
+  const { path: tempPath, originalname } = req.file;
+  const { _id } = req.user;
+  const filename = _id + originalname;
+  const newPath = path.join("public/avatars", filename);
+  await fs.rename(tempPath, newPath);
+  const avatarURL = path.join("avatars", filename);
+  const updatedUser = await User.findByIdAndUpdate(_id, { avatarURL });
+  if (!updatedUser) {
+    throw HttpError(404);
+  }
+  res.status(200).json({ avatarURL });
 };
 
 module.exports = {
@@ -79,4 +101,5 @@ module.exports = {
   logout: ctrlWrapper(logout),
   getCurrentUser: ctrlWrapper(getCurrentUser),
   updateSubscriptionStatus: ctrlWrapper(updateSubscriptionStatus),
+  updateUserAvatar: ctrlWrapper(updateUserAvatar),
 };
