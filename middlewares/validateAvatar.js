@@ -1,6 +1,6 @@
 const { HttpError } = require("../helpers");
 
-const validateAvatar = (req, res, next) => {
+const validateAvatar = (schema) => (req, res, next) => {
   if (req.file) {
     next();
     return;
@@ -8,9 +8,11 @@ const validateAvatar = (req, res, next) => {
   if (Object.keys(req.body).length < 1) {
     throw HttpError(400, "missing required avatar field");
   }
-  if (typeof req.body.avatar === "string") {
-    throw HttpError(400, "avatar field must be a file");
+  const { error } = schema.validate(req.body);
+  if (error) {
+    throw HttpError(400, error.message);
   }
+  next();
 };
 
 module.exports = validateAvatar;
