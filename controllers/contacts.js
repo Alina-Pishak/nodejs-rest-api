@@ -20,7 +20,7 @@ const getContactById = async (req, res) => {
     .equals(owner)
     .populate("owner", "email");
   if (!contact) {
-    throw HttpError(404, "Not found");
+    throw HttpError(404);
   }
   res.status(200).json(contact);
 };
@@ -40,7 +40,7 @@ const removeContact = async (req, res) => {
     .equals(owner)
     .populate("owner", "email");
   if (!removedContact) {
-    throw HttpError(404, "Not found");
+    throw HttpError(404);
   }
   res.status(200).json({ message: "contact deleted" });
 };
@@ -63,7 +63,7 @@ const updateContact = async (req, res) => {
     .equals(owner)
     .populate("owner", "email");
   if (!updatedContact) {
-    throw HttpError(404, "Not found");
+    throw HttpError(404);
   }
   res.status(200).json(updatedContact);
 };
@@ -83,7 +83,7 @@ const updateStatusContact = async (req, res, next) => {
     .equals(owner)
     .populate("owner", "email");
   if (!updatedContact) {
-    throw HttpError(404, "Not found");
+    throw HttpError(404);
   }
   res.status(200).json(updatedContact);
 };
