@@ -3,6 +3,7 @@ const favoriteSchema = require("./favoriteSchema");
 const userSchema = require("./userSchema");
 const subscriptionSchema = require("./subscriptionSchema");
 const avatarSchema = require("./avatarSchema");
+const verifyEmailSchema = require("./verifyEmailSchema");
 
 module.exports = {
   bodySchema,
@@ -10,4 +11,5 @@ module.exports = {
   userSchema,
   subscriptionSchema,
   avatarSchema,
+  verifyEmailSchema,
 };

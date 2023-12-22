@@ -9,7 +9,7 @@ const listContacts = async (req, res) => {
     .skip(skip)
     .limit(limit)
     .populate("owner", "name, email");
-  res.status(200).json(allContacts);
+  res.json(allContacts);
 };
 
 const getContactById = async (req, res) => {
@@ -22,7 +22,7 @@ const getContactById = async (req, res) => {
   if (!contact) {
     throw HttpError(404);
   }
-  res.status(200).json(contact);
+  res.json(contact);
 };
 
 const addContact = async (req, res) => {
@@ -42,7 +42,7 @@ const removeContact = async (req, res) => {
   if (!removedContact) {
     throw HttpError(404);
   }
-  res.status(200).json({ message: "contact deleted" });
+  res.json({ message: "contact deleted" });
 };
 
 const updateContact = async (req, res) => {
@@ -65,7 +65,7 @@ const updateContact = async (req, res) => {
   if (!updatedContact) {
     throw HttpError(404);
   }
-  res.status(200).json(updatedContact);
+  res.json(updatedContact);
 };
 
 const updateStatusContact = async (req, res, next) => {
@@ -85,7 +85,7 @@ const updateStatusContact = async (req, res, next) => {
   if (!updatedContact) {
     throw HttpError(404);
   }
-  res.status(200).json(updatedContact);
+  res.json(updatedContact);
 };
 
 module.exports = {
