@@ -9,7 +9,7 @@ const { nanoid } = require("nanoid");
 
 const { SECRET_KEY } = process.env;
 
-const register = async (req, res, next) => {
+const register = async (req, res) => {
   const { email, password } = req.body;
   const avatarURL = gravatar.url(email);
   const user = await User.findOne({ email });
@@ -37,7 +37,7 @@ const register = async (req, res, next) => {
   });
 };
 
-const login = async (req, res, next) => {
+const login = async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (!user.verify) {
@@ -61,25 +61,18 @@ const login = async (req, res, next) => {
   });
 };
 
-const logout = async (req, res, next) => {
+const logout = async (req, res) => {
   const { id } = req.user;
-  const user = await User.findByIdAndUpdate(id, { token: "" });
-  if (!user) {
-    throw HttpError(401);
-  }
+  await User.findByIdAndUpdate(id, { token: "" });
   res.status(204).json();
 };
 
-const getCurrentUser = async (req, res, next) => {
-  const { id } = req.user;
-  const user = await User.findById(id);
-  if (!user) {
-    throw HttpError(401);
-  }
-  res.json({ email: user.email, subscription: user.subscription });
+const getCurrentUser = async (req, res) => {
+  const { email, subscription } = req.user;
+  res.json({ email, subscription });
 };
 
-const updateSubscriptionStatus = async (req, res, next) => {
+const updateSubscriptionStatus = async (req, res) => {
   const { id } = req.user;
   const { subscription } = req.body;
   const updatedUser = await User.findByIdAndUpdate(
@@ -110,7 +103,7 @@ const updateUserAvatar = async (req, res) => {
   res.json({ avatarURL });
 };
 
-const verifyEmail = async (req, res, next) => {
+const verifyEmail = async (req, res) => {
   const { verificationToken } = req.params;
   const user = await User.findOne({ verificationToken });
   if (!user) {
@@ -123,7 +116,7 @@ const verifyEmail = async (req, res, next) => {
   res.json({ message: "Verification successful" });
 };
 
-const resendVerifyEmail = async (req, res, next) => {
+const resendVerifyEmail = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
   if (!user) {
